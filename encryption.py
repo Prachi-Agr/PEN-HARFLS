@@ -15,16 +15,19 @@ import numpy as np
 # note that in production the n_length should be at least 1024
 # public_key, private_key = phe.generate_paillier_keypair(n_length=128)
 
-def train_and_encrypt(model, input, target, x_test, y_test, opt, criterion, net, pubkey):
-    new_model_params = train(copy.deepcopy(model), input, target, x_test, y_test, opt=opt, criterion=criterion, epochs=1, clip_val=cfg.clip_val)
+def train_and_encrypt(model, input, target, x_test, y_test, opt, criterion, pubkey):
+    new_model_params, opt_mod = train(model , input, target, x_test, y_test, opt=opt, criterion=criterion, epochs=3, clip_val=cfg.clip_val)
     new_model = new_model_params['best_model']
     encrypted_weights = list()
-
+    i=0
+    print ("client")
     for param_tensor in new_model.parameters():
         # print(type(param_tensor))
         for val in param_tensor.flatten():
             val=val.detach().numpy().item()
-            # print(type(val))
+            if(i<10):
+                print(val)
+            i=i+1
             encrypted_weights.append(pubkey.encrypt(val))
 
     # for val in new_model.weight.data[:,0]:

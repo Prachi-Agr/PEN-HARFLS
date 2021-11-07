@@ -80,9 +80,9 @@ def main():
         criterion = nn.CrossEntropyLoss()
         net = net.float()
         #initalized to maintain aggregate
-        params = train(net, client_1[0], client_1[1], X_test, y_test, opt=opt, criterion=criterion, epochs=1, clip_val=clip_val)
-        
+        params, opt_modified = train(net, client_1[0], client_1[1], X_test, y_test, opt=opt, criterion=criterion, epochs=1, clip_val=clip_val)   
         model = params['best_model']
+        # opt = opt_modified
         # for name, param in model.named_parameters():
         #     print('name: ', name)
         #     print(type(param))
@@ -99,22 +99,24 @@ def main():
                     if(k>10):
                         break
             print("model params:", model_list)
-
+            
+            opt=torch.optim.SGD(model.parameters(), lr)
             #client 1
-            encrypted_client_1 = train_and_encrypt(model, client_1[0], client_1[1], X_test, y_test, opt, criterion, net, public_key)
+            client_model1 = copy.deepcopy(model)
+            encrypted_client_1 = train_and_encrypt(client_model1, client_1[0], client_1[1], X_test, y_test, torch.optim.SGD(client_model1.parameters(), lr), criterion,  public_key)
             #client 2
-            encrypted_client_2 = train_and_encrypt(model, client_2[0], client_2[1], X_test, y_test, opt, criterion, net, public_key)
+            client_model2 = copy.deepcopy(model)
+            encrypted_client_2 = train_and_encrypt(client_model2, client_2[0], client_2[1], X_test, y_test, torch.optim.SGD(client_model2.parameters(), lr), criterion,  public_key)
             #client 3
-            encrypted_client_3 = train_and_encrypt(model, client_3[0], client_3[1], X_test, y_test, opt, criterion, net, public_key)
+            client_model3 = copy.deepcopy(model)
+            encrypted_client_3 = train_and_encrypt(client_model3, client_3[0], client_3[1], X_test, y_test, torch.optim.SGD(client_model3.parameters(), lr), criterion,  public_key)
 
             # print("client 1:", encrypted_client_1[0:9])
             # print("Shape of client 2:", encrypted_client_2[0:9])
             # print("Shape of client 3:", encrypted_client_3[0:9])
 
-            aggregated_model = encrypted_client_1 + \
-                               encrypted_client_2 + \
-                               encrypted_client_3
-            
+            aggregated_model = np.add(encrypted_client_1, encrypted_client_2)
+            aggregated_model = np.add(aggregated_model, encrypted_client_3)
             # print("Aggregate Model shape:", aggregated_model[0:9])
 
             raw_values = list()

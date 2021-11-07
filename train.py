@@ -34,6 +34,7 @@ def train(net, X_train, y_train, X_test, y_test, opt, criterion, epochs=100, cli
         'train_accuracy' : [],
         'test_accuracy' : []
     }
+
     for epoch in range(epochs):
         train_losses = []
         step = 1
@@ -66,10 +67,16 @@ def train(net, X_train, y_train, X_test, y_test, opt, criterion, epochs=100, cli
             train_accuracy += torch.mean(equals.type(torch.FloatTensor))
             equals = top_class
 
+            a = list(net.parameters())[0].clone() 
+
             train_loss.backward()
             clip_grad.clip_grad_norm_(net.parameters(), clip_val)
             opt.step()
             step += 1
+
+            b = list(net.parameters())[0].clone()
+
+            print("checking ----", torch.equal(a.data, b.data))
 
         p = opt.param_groups[0]['lr']
         params['lr'].append(p)
@@ -97,4 +104,4 @@ def train(net, X_train, y_train, X_test, y_test, opt, criterion, epochs=100, cli
     params['test_loss'] = epoch_test_losses
     params['train_accuracy'] = epoch_train_acc
     params['test_accuracy'] = epoch_test_acc
-    return params
+    return params, opt
