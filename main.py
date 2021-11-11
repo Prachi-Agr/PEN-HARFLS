@@ -90,15 +90,15 @@ def main():
         #     print('param.requires_grad: ', param.requires_grad)
         #     print('=====')
         for i in range(0,epochs):
-            k=0
-            model_list=list()
-            for param_tensor in model.parameters():
-                for val in param_tensor.flatten():
-                    model_list.append(val.detach().numpy().item())
-                    k=k+1
-                    if(k>10):
-                        break
-            print("model params:", model_list)
+            # k=0
+            # model_list=list()
+            # for param_tensor in model.parameters():
+            #     for val in param_tensor.flatten():
+            #         model_list.append(val.detach().numpy().item())
+            #         k=k+1
+            #         if(k>10):
+            #             break
+            # print("model params:", model_list)
             
             opt=torch.optim.SGD(model.parameters(), lr)
             #client 1
@@ -124,9 +124,9 @@ def main():
                 raw_values.append(private_key.decrypt(val))
             # new = np.array(raw_values).reshape(model.weight.data.shape)/3
             # model.weight.data = new
-            print("Raw values:", raw_values[0:9])
+            # print("Raw values:", raw_values[0:9])
             new = np.array(raw_values)/3
-            print("\t% new array: ",new[0:9])
+            # print("\t% new array: ",new[0:9])
             # new -> model (iterate)
             j=0
             for param_tensor in model.parameters():

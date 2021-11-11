@@ -25,9 +25,9 @@ def train_and_encrypt(model, input, target, x_test, y_test, opt, criterion, pubk
         # print(type(param_tensor))
         for val in param_tensor.flatten():
             val=val.detach().numpy().item()
-            if(i<10):
-                print(val)
-            i=i+1
+            # if(i<10):
+            #     print(val)
+            # i=i+1
             encrypted_weights.append(pubkey.encrypt(val))
 
     # for val in new_model.weight.data[:,0]:
