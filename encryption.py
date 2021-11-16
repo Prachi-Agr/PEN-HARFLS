@@ -16,7 +16,7 @@ import numpy as np
 # public_key, private_key = phe.generate_paillier_keypair(n_length=128)
 
 def train_and_encrypt(model, input, target, x_test, y_test, opt, criterion, pubkey):
-    new_model_params, opt_mod = train(model , input, target, x_test, y_test, opt=opt, criterion=criterion, epochs=3, clip_val=cfg.clip_val)
+    new_model_params, opt_mod = train(model , input, target, x_test, y_test, opt=opt, criterion=criterion, epochs=1, clip_val=cfg.clip_val)
     new_model = new_model_params['best_model']
     encrypted_weights = list()
     i=0
@@ -24,7 +24,10 @@ def train_and_encrypt(model, input, target, x_test, y_test, opt, criterion, pubk
     for param_tensor in new_model.parameters():
         # print(type(param_tensor))
         for val in param_tensor.flatten():
-            val=val.detach().numpy().item()
+            if(torch.cuda.is_available()):
+                val=val.cpu().detach().numpy().item()
+            else:
+                val=val.detach().numpy()
             # if(i<10):
             #     print(val)
             # i=i+1

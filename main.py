@@ -4,7 +4,7 @@ from datasets import load_data_UCIHAR
 from train import train
 from torch import nn
 # from model import LSTMModel, Bidir_LSTMModel, Res_LSTMModel, Res_Bidir_LSTMModel, init_weights
-from model import PEN, init_weights
+from model_cuda import PEN, init_weights
 from utils import plot, evaluate
 import config as cfg
 import data_file as df

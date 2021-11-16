@@ -37,4 +37,4 @@ n_classes = 6
 n_input = 9
 n_hidden = 64
 batch_size = 64
-n_epochs = 20
+n_epochs = 50
